@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SubTrack Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <section class="hero">
+    <div class="container">
+      <div class="hero-topbar">
+        <a class="brand-mark" href="index.html">SUB<br />TRACK</a>
+        <div class="topbar-actions">
+          <span class="account-pill" id="accountStatusPill">Guest</span>
+          <button class="hero-link hero-link-btn" id="accountActionBtn" type="button">Login</button>
+          <a class="hero-link" href="subscriptions.html">Premium</a>
+          <a class="hero-link" href="index.html">Home</a>
+        </div>
+      </div>
+      <h1>Your Subscriptions</h1>
+      <p>Track costs, analyze spend, and manage every subscription from one dashboard.</p>
+      <button class="btn" id="addBtn">+ Add New Subscription</button>
+    </div>
+  </section>
+
+  <main class="content">
+    <div class="container">
+      <section class="stats">
+        <article class="card stat-card">
+          <div class="icon blue">□</div>
+          <div class="label">Active Subscriptions</div>
+          <div class="value" id="activeCount">5</div>
+          <div class="subtext">5 total</div>
+        </article>
+
+        <article class="card stat-card">
+          <div class="icon purple">◫</div>
+          <div class="label">Monthly Cost</div>
+          <div class="value" id="monthlyCost">$95.97</div>
+          <div class="subtext">per month</div>
+        </article>
+
+        <article class="card stat-card">
+          <div class="icon pink">↗</div>
+          <div class="label">Yearly Cost</div>
+          <div class="value" id="yearlyCost">$1151.64</div>
+          <div class="subtext">per year</div>
+        </article>
+
+        <article class="card stat-card">
+          <div class="icon orange">$</div>
+          <div class="label">Average Cost</div>
+          <div class="value" id="averageCost">$19.19</div>
+          <div class="subtext">per subscription</div>
+        </article>
+      </section>
+
+      <section class="card panel">
+        <div class="panel-header">
+          <h2>Your Spending</h2>
+          <div class="chart-controls" aria-label="Chart cost view toggle">
+            <button class="chart-toggle active" data-view="monthly" type="button">Monthly</button>
+            <button class="chart-toggle" data-view="yearly" type="button">Yearly</button>
+          </div>
+        </div>
+        <div class="chart-note">This graph shows your current cost distribution.</div>
+        <div class="chart" id="chart"></div>
+      </section>
+
+      <section class="card panel">
+        <div class="panel-header">
+          <h2>AI Budget Tool</h2>
+        </div>
+        <div class="chart-note" id="aiBudgetStatusText">Premium and Lifetime can use AI budget insights.</div>
+        <div class="form-grid">
+          <div class="field-full">
+            <label for="aiBudgetInput">Budget Goal or Question</label>
+            <textarea id="aiBudgetInput" placeholder="Example: Keep my monthly total under $80. What should I cut first?"></textarea>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-gradient" id="runAiBudgetBtn" type="button">Run AI Budget Insight</button>
+          <div class="field-note" id="aiBudgetUsageText">Usage: 0 / 0</div>
+        </div>
+        <div class="confirm-preview" id="aiBudgetOutput" style="margin-top:12px;">Your AI result will appear here.</div>
+        <button class="btn btn-secondary" id="developerResetBtn" type="button" style="display:none; margin-top:12px;">
+          Developer Reset
+        </button>
+      </section>
+
+      <section class="card panel inbox-panel">
+        <div class="panel-header">
+          <h2>Live Inbox Detector</h2>
+          <button class="panel-minimize-btn" id="toggleInboxPanelBtn" type="button" aria-expanded="true">− Minimize</button>
+        </div>
+
+        <div class="panel-collapsible" id="inboxPanelBody">
+          <div class="inbox-controls">
+            <div class="inbox-link-row">
+              <input id="inboxEmailInput" type="email" placeholder="you@gmail.com" />
+              <button class="btn btn-secondary" id="linkInboxBtn" type="button">Link Gmail</button>
+            </div>
+
+            <div class="field-note" id="inboxStatus">Log in to link Gmail and use live inbox sync.</div>
+
+            <div class="field-full">
+              <label for="receiptInboxText">Paste receipt text (fallback)</label>
+              <textarea id="receiptInboxText" placeholder="Paste receipt lines here if live scan is unavailable..."></textarea>
+            </div>
+
+            <button class="btn btn-gradient" id="scanReceiptsBtn" type="button">Scan Receipts</button>
+          </div>
+
+          <div class="detected-receipts" id="detectedReceipts"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Filter by Category</h2>
+        <div class="filters" id="filters"></div>
+      </section>
+
+      <section class="subscriptions" id="subscriptions"></section>
+    </div>
+  </main>
+
+  <div class="modal-overlay" id="subscriptionModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="subscriptionModalTitle">
+      <div class="modal-header">
+        <h2 id="subscriptionModalTitle">Add New Subscription</h2>
+        <button class="modal-close" id="closeModalBtn" type="button" aria-label="Close modal">&times;</button>
+      </div>
+
+      <form class="subscription-form" id="subscriptionForm">
+        <div class="form-grid">
+          <div class="field-full">
+            <label for="serviceName">Service Name *</label>
+            <input id="serviceName" name="serviceName" type="text" placeholder="Netflix, Spotify, etc." required />
+          </div>
+
+          <div class="field-full">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" placeholder="Add notes about this subscription..."></textarea>
+          </div>
+
+          <div class="field">
+            <label for="price">Price *</label>
+            <input id="price" name="price" type="number" min="0" step="0.01" placeholder="9.99" required />
+          </div>
+
+          <div class="field">
+            <label for="currency">Currency</label>
+            <select id="currency" name="currency">
+              <option value="USD ($)">USD ($)</option>
+              <option value="CAD ($)">CAD ($)</option>
+              <option value="EUR (€)">EUR (€)</option>
+              <option value="GBP (£)">GBP (£)</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="billingCycle">Billing Cycle *</label>
+            <select id="billingCycle" name="billingCycle" required>
+              <option value="Monthly">Monthly</option>
+              <option value="Yearly">Yearly</option>
+              <option value="Weekly">Weekly</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="category">Category</label>
+            <select id="category" name="category">
+              <option value="Other">Other</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Productivity">Productivity</option>
+              <option value="Utilities">Utilities</option>
+              <option value="Fitness">Fitness</option>
+              <option value="Education">Education</option>
+              <option value="Music">Music</option>
+              <option value="Cloud Storage">Cloud Storage</option>
+              <option value="Software">Software</option>
+              <option value="Gaming">Gaming</option>
+              <option value="News">News</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="nextRenewal">Next Renewal Date</label>
+            <input id="nextRenewal" name="nextRenewal" type="date" />
+          </div>
+
+          <div class="field">
+            <label for="status">Status</label>
+            <select id="status" name="status">
+              <option value="active">Active</option>
+              <option value="paused">Paused</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="logoFile">Logo Image</label>
+            <input id="logoFile" name="logoFile" type="file" accept="image/*" />
+            <div class="field-note" id="logoFileNote">Upload a screenshot or downloaded image.</div>
+          </div>
+
+          <div class="field">
+            <label for="website">Website</label>
+            <input id="website" name="website" type="url" placeholder="https://..." />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-secondary" id="cancelModalBtn" type="button">Cancel</button>
+          <button class="btn btn-gradient" id="submitSubscriptionBtn" type="submit">Add Subscription</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="receiptConfirmModal" aria-hidden="true">
+    <div class="modal auth-modal" role="dialog" aria-modal="true" aria-labelledby="receiptConfirmTitle">
+      <div class="modal-header">
+        <h2 id="receiptConfirmTitle">Confirm Subscription</h2>
+        <button class="modal-close" id="closeReceiptConfirmBtn" type="button" aria-label="Close confirmation modal">&times;</button>
+      </div>
+      <div class="subscription-form">
+        <div class="confirm-preview" id="receiptConfirmPreview"></div>
+        <div class="form-actions">
+          <button class="btn btn-secondary" id="cancelReceiptConfirmBtn" type="button">Cancel</button>
+          <button class="btn btn-gradient" id="confirmReceiptAddBtn" type="button">Confirm and Add</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="authModal" aria-hidden="true">
+    <div class="modal auth-modal" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
+      <div class="modal-header">
+        <h2 id="authModalTitle">Login</h2>
+        <button class="modal-close" id="closeAuthModalBtn" type="button" aria-label="Close auth modal">&times;</button>
+      </div>
+      <form class="subscription-form auth-form" id="authForm">
+        <div class="form-grid">
+          <div class="field-full">
+            <label for="authEmail">Email</label>
+            <input id="authEmail" name="authEmail" type="email" placeholder="you@example.com" required />
+          </div>
+          <div class="field-full">
+            <label for="authPassword">Password</label>
+            <input id="authPassword" name="authPassword" type="password" placeholder="At least 6 characters" required />
+          </div>
+          <div class="field-full">
+            <div class="field-note auth-status" id="authStatusText">Use your account to enable protected session features.</div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-secondary" id="authSwitchBtn" type="button">Create account instead</button>
+          <button class="btn btn-gradient" id="authSubmitBtn" type="submit">Login</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
