@@ -35,7 +35,8 @@ app.use(express.json());
 app.use(
   cors({
     origin: frontendOrigin,
-    credentials: true
+    credentials: true,
+    origin: "*"
   })
 );
 app.use(
