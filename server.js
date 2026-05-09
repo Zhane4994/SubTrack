@@ -20,9 +20,9 @@ const usersFilePath = path.join(__dirname, "data", "users.json");
 const publicDir = path.join(__dirname, "public");
 const FREE_SUBSCRIPTION_LIMIT = 5;
 const PREMIUM_PRICING = {
-  monthly: 10.99,
-  yearly: 109.99,
-  lifetime: 100
+  monthly: 2.99,
+  yearly: 24.99,
+  lifetime: 59.99
 };
 
 const oauth2Client = new google.auth.OAuth2(
