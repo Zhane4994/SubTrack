@@ -166,7 +166,7 @@ let chartAnimationState = {
   displayMax: null,
   valuesByKey: {}
 };
-const INBOX_API_BASE = window.SUBTRACK_API_BASE || "http://localhost:8787";
+const INBOX_API_BASE = window.location.host.includes("localhost") ? "http://localhost:8787" : "https://sub-track.ca";
 const DEFAULT_FREE_SUBSCRIPTION_LIMIT = 5;
 const DEFAULT_PREMIUM_PRICING = {
   monthly: 10.99,
