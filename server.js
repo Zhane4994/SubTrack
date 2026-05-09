@@ -34,8 +34,8 @@ const oauth2Client = new google.auth.OAuth2(
 app.use(express.json());
 app.use(
   cors({
-    origin: [frontendOrigin, "http://localhost:5500", `http://localhost:${port}`],
-    credentials: true
+    origin: frontendOrigin,
+    credentials: true,
   })
 );
 app.use(
