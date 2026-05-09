@@ -1066,6 +1066,10 @@ a.btn {
   min-height: 140px;
 }
 
+.receipt-fallback.hidden {
+  display: none;
+}
+
 .panel-minimize-btn {
   display: inline-flex;
   align-items: center;

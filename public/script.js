@@ -1421,6 +1421,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const linkInboxBtn = document.getElementById("linkInboxBtn");
   const inboxStatus = document.getElementById("inboxStatus");
   const receiptInboxText = document.getElementById("receiptInboxText");
+  const receiptFallbackField = document.getElementById("receiptFallbackField");
   const scanReceiptsBtn = document.getElementById("scanReceiptsBtn");
   const detectedReceipts = document.getElementById("detectedReceipts");
   const toggleInboxPanelBtn = document.getElementById("toggleInboxPanelBtn");
@@ -1846,6 +1847,21 @@ document.addEventListener("DOMContentLoaded", () => {
     inboxStatus.textContent = message || "Not linked.";
   }
 
+  function setReceiptFallbackVisible(visible, { clearText = false } = {}) {
+    if (!receiptFallbackField) {
+      return;
+    }
+
+    receiptFallbackField.classList.toggle("hidden", !visible);
+    receiptFallbackField.setAttribute("aria-hidden", visible ? "false" : "true");
+    if (clearText && receiptInboxText) {
+      receiptInboxText.value = "";
+    }
+    if (visible && receiptInboxText) {
+      receiptInboxText.focus();
+    }
+  }
+
   async function syncInboxStateFromServer(message = "") {
     if (!inboxEmailInput || !linkInboxBtn || !inboxStatus) {
       return false;
@@ -2044,6 +2060,7 @@ document.addEventListener("DOMContentLoaded", () => {
       renderAccountState("Logged out.");
       renderPlanState("You are on Free plan.");
       renderInboxLinkState("Log in to link Gmail and use live inbox sync.");
+      setReceiptFallbackVisible(false, { clearText: true });
       detectedCandidates = [];
       renderDetectedCandidates(detectedReceipts, openReceiptConfirmModal);
       renderAiBudgetToolState();
@@ -2142,6 +2159,7 @@ document.addEventListener("DOMContentLoaded", () => {
         inboxState = { linked: false, email: "" };
         saveInboxState();
         renderInboxLinkState("Gmail unlinked.");
+        setReceiptFallbackVisible(false, { clearText: true });
         return;
       }
 
@@ -2166,6 +2184,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (linked) {
           clearInterval(poll);
           renderInboxLinkState("Gmail linked successfully.");
+          setReceiptFallbackVisible(false, { clearText: true });
         }
         if (popup.closed) {
           clearInterval(poll);
@@ -2209,6 +2228,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
+      setReceiptFallbackVisible(false);
       inboxStatus.textContent = "Scanning inbox receipts...";
 
       try {
@@ -2219,6 +2239,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         detectedCandidates = Array.isArray(response.candidates) ? response.candidates : [];
         renderDetectedCandidates(detectedReceipts, openReceiptConfirmModal);
+        setReceiptFallbackVisible(false, { clearText: true });
 
         if (!detectedCandidates.length) {
           inboxStatus.textContent = "No subscription receipts found in recent inbox messages.";
@@ -2230,11 +2251,17 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       catch (error) {
+        setReceiptFallbackVisible(true);
         const rawText = receiptInboxText ? receiptInboxText.value.trim() : "";
         if (rawText) {
           detectedCandidates = parseReceiptCandidates(rawText);
           renderDetectedCandidates(detectedReceipts, openReceiptConfirmModal);
-          inboxStatus.textContent = `Live scan unavailable (${error.message}). Using pasted receipt text fallback.`;
+          if (detectedCandidates.length) {
+            setReceiptFallbackVisible(false, { clearText: true });
+            inboxStatus.textContent = `Detected ${detectedCandidates.length} subscription receipt${detectedCandidates.length === 1 ? "" : "s"} from pasted receipt text. Review and confirm to add.`;
+          } else {
+            inboxStatus.textContent = `Live scan unavailable (${error.message}). Paste receipt text with an amount to use the fallback.`;
+          }
         } else {
           detectedCandidates = [];
           renderDetectedCandidates(detectedReceipts, openReceiptConfirmModal);
