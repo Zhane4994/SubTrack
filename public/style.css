@@ -963,6 +963,7 @@ a.btn {
   gap: 16px;
   padding: 28px 32px;
   border-bottom: 1px solid #eef2f7;
+  text-colour:#ffa503;
 }
 
 .modal-header h2 {
