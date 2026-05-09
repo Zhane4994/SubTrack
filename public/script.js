@@ -169,9 +169,9 @@ let chartAnimationState = {
 const INBOX_API_BASE = window.location.host.includes("localhost") ? "http://localhost:8787" : "https://sub-track.ca";
 const DEFAULT_FREE_SUBSCRIPTION_LIMIT = 5;
 const DEFAULT_PREMIUM_PRICING = {
-  monthly: 10.99,
-  yearly: 109.99,
-  lifetime: 100
+  monthly: 2.99,
+  yearly: 24.99,
+  lifetime: 59.99
 };
 const DEVELOPER_EMAIL = "zhaner4994@gmail.com";
 const AI_USAGE_LIMITS = {
